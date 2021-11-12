@@ -1,5 +1,10 @@
 <template>
-    <div>Search</div>
+<!--    <div>Search-->
+<!--        params:{{$route.params.keyword}}-->
+    <div>
+        <TypeNav></TypeNav>
+    </div>
+
 </template>
 
 <script>
