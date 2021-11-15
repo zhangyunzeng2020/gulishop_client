@@ -3,29 +3,11 @@
     <div class="floor">
         <div class="py-container">
             <div class="title clearfix">
-                <h3 class="fl">家用电器</h3>
+                <h3 class="fl">{{floor.name}}</h3>
                 <div class="fr">
                     <ul class="nav-tabs clearfix">
-                        <li class="active">
-                            <a href="#tab1" data-toggle="tab">热门</a>
-                        </li>
-                        <li>
-                            <a href="#tab2" data-toggle="tab">大家电</a>
-                        </li>
-                        <li>
-                            <a href="#tab3" data-toggle="tab">生活电器</a>
-                        </li>
-                        <li>
-                            <a href="#tab4" data-toggle="tab">厨房电器</a>
-                        </li>
-                        <li>
-                            <a href="#tab5" data-toggle="tab">应季电器</a>
-                        </li>
-                        <li>
-                            <a href="#tab6" data-toggle="tab">空气/净水</a>
-                        </li>
-                        <li>
-                            <a href="#tab7" data-toggle="tab">高端电器</a>
+                        <li class="active" v-for="(nav,index) in floor.navList" :key="nav.text">
+                            <a href="#tab1" data-toggle="tab">{{nav.text}}</a>
                         </li>
                     </ul>
                 </div>
@@ -35,55 +17,45 @@
                     <div class="floor-1">
                         <div class="blockgary">
                             <ul class="jd-list">
-                                <li>节能补贴</li>
-                                <li>4K电视</li>
-                                <li>空气净化器</li>
-                                <li>IH电饭煲</li>
-                                <li>滚筒洗衣机</li>
-                                <li>电热水器</li>
+                                <li v-for="(keyword,index) in floor.keywords" :key="index">{{keyword}}</li>
                             </ul>
-                            <img src="./images/floor-1-1.png" />
+                            <img :src="floor.imgUrl" />
                         </div>
                         <div class="floorBanner">
-                            <div class="swiper-container" id="floor1Swiper">
-                                <div class="swiper-wrapper">
-                                    <div class="swiper-slide">
-                                        <img src="./images/floor-1-b01.png">
-                                    </div>
-<!--                                    <div class="swiper-slide">-->
-<!--                                        <img src="./images/floor-1-b02.png">-->
+<!--                            <div class="swiper-container" id="floor1Swiper" ref="floorSwiper">-->
+<!--                                <div class="swiper-wrapper">-->
+<!--                                    <div class="swiper-slide" v-for="(carouse,index) in floor.carouselList" :key="carouse.id">-->
+<!--                                        <img :src="carouse.imgUrl">-->
 <!--                                    </div>-->
-<!--                                    <div class="swiper-slide">-->
-<!--                                        <img src="./images/floor-1-b03.png">-->
-<!--                                    </div>-->
-                                </div>
-                                <!-- 如果需要分页器 -->
-                                <div class="swiper-pagination"></div>
+<!--                                </div>-->
+<!--                                &lt;!&ndash; 如果需要分页器 &ndash;&gt;-->
+<!--                                <div class="swiper-pagination"></div>-->
 
-                                <!-- 如果需要导航按钮 -->
-                                <div class="swiper-button-prev"></div>
-                                <div class="swiper-button-next"></div>
-                            </div>
+<!--                                &lt;!&ndash; 如果需要导航按钮 &ndash;&gt;-->
+<!--                                <div class="swiper-button-prev"></div>-->
+<!--                                <div class="swiper-button-next"></div>-->
+<!--                            </div>-->
+                            <SlideLoop :bannerList="floor.carouselList"></SlideLoop>
                         </div>
                         <div class="split">
                             <span class="floor-x-line"></span>
                             <div class="floor-conver-pit">
-                                <img src="./images/floor-1-2.png" />
+                                <img :src="floor.recommendList[0]" />
                             </div>
                             <div class="floor-conver-pit">
-                                <img src="./images/floor-1-3.png" />
+                                <img :src="floor.recommendList[1]" />
                             </div>
                         </div>
                         <div class="split center">
-                            <img src="./images/floor-1-4.png" />
+                            <img :src="floor.bigImg" />
                         </div>
                         <div class="split">
                             <span class="floor-x-line"></span>
                             <div class="floor-conver-pit">
-                                <img src="./images/floor-1-5.png" />
+                                <img :src="floor.recommendList[2]" />
                             </div>
                             <div class="floor-conver-pit">
-                                <img src="./images/floor-1-6.png" />
+                                <img :src="floor.recommendList[3]" />
                             </div>
                         </div>
                     </div>
@@ -94,8 +66,75 @@
 </template>
 
 <script>
+    // import Swiper from 'swiper'
     export default {
-        name: "Floor"
+        name: "Floor",
+        props:['floor'],//声明接收属性，后面通过这个属性可以获取到属性值，这个floor就是组件对象的数据了
+        //在listContainer内部，轮播图直接在这实例化是不行的，最终采用watch+nextTick才完成的
+        //而floor当中的轮播图，为啥就直接成功了？
+        //它肯定是在页面形成之后才实例化的
+        //原因：  刚才在banner的时候，数据是在mounted里面请求的，
+        //必须等待数据请求回来，然后根据数据创建好结构，才能实例化swiper
+
+        // 现在我们的floor不需要，因为在floor当中，不存在请求数据，数据早都请求回来了
+        // 在Home组件当中请求的数据，而且floor组件的创建必须是根据请求回来的数据vfor才能创建
+        // 所以floor中实例化的时候，数据一定是存在的，结构也就不需要等待数据，早早就形成了
+        // mounted() {
+        //     new Swiper(this.$refs.floorSwiper, {
+        //         // direction: "vertical", // 垂直切换选项，去掉就代表轮播是水平的
+        //
+        //         loop: true, // 循环模式选项   无缝的开关
+        //
+        //         // 如果需要分页器      小圆点
+        //         pagination: {
+        //             el: ".swiper-pagination",
+        //         },
+        //
+        //         // 如果需要前进后退按钮
+        //         navigation: {
+        //             nextEl: ".swiper-button-next",
+        //             prevEl: ".swiper-button-prev",
+        //         },
+        //
+        //         // 如果需要滚动条
+        //         // scrollbar: {
+        //         //   el: ".swiper-scrollbar",
+        //         // },
+        //     })
+        // },
+        //这里监视，是监视不到数据变化的，因为数据早都过来的 （3 - 3不会变化）
+        //而listContainer是可以监视到数据 0 - 4的变化
+        // watch: {
+        //   floor: {
+        //     immediate:true,//无论有没有检测到数据变化，都立即执行一次回调函数
+        //     handler(newVal, oldVal) {
+        //       this.$nextTick(() => {
+        //         new Swiper(this.$refs.floorSwiper, {
+        //           // direction: "vertical", // 垂直切换选项，去掉就代表轮播是水平的
+
+        //           loop: true, // 循环模式选项   无缝的开关
+
+        //           // 如果需要分页器      小圆点
+        //           pagination: {
+        //             el: ".swiper-pagination",
+        //           },
+
+        //           // 如果需要前进后退按钮
+        //           navigation: {
+        //             nextEl: ".swiper-button-next",
+        //             prevEl: ".swiper-button-prev",
+        //           },
+
+        //           // 如果需要滚动条
+        //           // scrollbar: {
+        //           //   el: ".swiper-scrollbar",
+        //           // },
+        //         });
+        //       });
+        //     },
+        //   },
+        // },
+
     }
 </script>
 

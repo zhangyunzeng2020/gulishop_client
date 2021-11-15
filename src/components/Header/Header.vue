@@ -108,11 +108,16 @@
                 // }).catch(() => {});
 
                 //解决2，修改路由器对象，原型的方法
-
-                this.$router.push({
+                let location = {
                     name:'search',
                     params:{ keyword: this.keyword || undefined}
-                })
+                }
+
+                //跳转之前一样的，也得判断之前过来有没有带query参数，有的话这次一起带上（合并参数）
+                if(this.$route.query){
+                    location.query = this.$route.query
+                }
+                this.$router.push(location)
             }
         }
     }
